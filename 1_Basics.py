@@ -1,13 +1,15 @@
-from pydantic import BaseModel, EmailStr, AnyUrl
-from typing import List, Dict, Optional
+from pydantic import BaseModel, EmailStr, AnyUrl, Field
+from typing import List, Dict, Optional, Annotated
 
 class Patient(BaseModel):
 
-    name: str
+    name: str = Annotated[str, Field(max_length = 50, title="Name of the patient", description = "Give the name of the patient in less than 50 characters", examples = ["Naman", "Sujal", "Kishan"])]
     email: EmailStr
     linkedin_url: AnyUrl
     age: int
-    weight: float
+
+    # With the help of Field we can add a custom range for any field. Here we are adding a custom range for weight in which weight should not be less than 0.
+    weight: float = Field(gt = 0, lt = 120)
 
     # We can also set a default value from here and if we don't give any value in the object then it will considered this value as a default.
     married: bool = False
@@ -15,7 +17,7 @@ class Patient(BaseModel):
     # we don't use list becuase we don't only validate the list but we validate the list and the entered values in the list are also string
     # and that's why we use List[str].
     # Now allergies will be optional because we use Optional[List[str]] and we have to give a default value which is None.
-    allergies: Optional[List[str]] = None
+    allergies: Annotated[Optional[List[str]], Field(default = None, max_length = 5)] # We can't add more than 5 allergies in a list.
 
     # we don't use list becuase we don't only validate the dictionary but we validate the dictionary and the entered keys and values both should be string and that's why we use Dict[str, str].
     contact_details: Dict[str, str]
